@@ -5,7 +5,7 @@
 --          parameters for the DS UVER Free Camera, enhancing the overall 
 --          enjoyment of the game.
 -- License: MIT
--- Version: 2.0.0
+-- Version: 2.0.1
 -- Date:    2025/02/13
 -- Author:  Dabinn Huang @DSlabs
 -- Powered by TofuExpress --
@@ -37,7 +37,7 @@ uprint("Customizing Free Camera")
 cfg.opt = {
     enableGuiToggle = true, -- Disable game GUI when free camera is enabled
     recenterVROnCameraReset = true, -- Reset the camera and recenter VR at the same time
-    freeCamKeepPosition = true,  -- Don't reset the free camera's position while switching cameras.
+    freecamKeepPosition = true,  -- Don't reset the free camera's position while switching cameras.
 }
 
 
@@ -51,30 +51,46 @@ local sceneType={
     HangerDecal=5,
 }
 
+local buttons = {}
+buttons[camType.free] = {
+    active = "L3_held",
+    deactive = "L3",
+    resetCam = "R3",
+    speedIncrease = "RB",
+    speedDecrease = "LB",
+}
+buttons[camType.orbit] = {
+    camDolly = "RB_held",
+    camOffset= "Back",
+    resetCam = "R3",
+}
+local axes = {}
+axes[camType.orbit] = {
+    rot={"RX", "RY"},
+}
+
 local sceneCfg = {}
+sceneCfg[sceneType.Default] = {
+    camMode = camType.default,
+    buttons = {
+        resetCam = "R3",
+    },
+}
 sceneCfg[sceneType.FreeCam] = {
     camMode = camType.free,
-    buttons = {
-        active = "L3_held",
-        deactive = "L3",
-        resetCam = "R3",
-        speedIncrease = "RB",
-        speedDecrease = "LB",
-    },
+    buttons = buttons[camType.free],
     -- use the default axes Config
 }
 sceneCfg[sceneType.InStage] = { -- Used by InStage/Competition
     camMode = camType.orbit,
-    buttons = {
-        camDolly = "RB_held",
-        camOffset= "Back",
-        resetCam = "R3",
-    },
-    axes = {
-        rot={"RX", "RY"},
-    },
+    buttons = buttons[camType.orbit],
+    axes = axes[camType.orbit],
 }
-sceneCfg[sceneType.Hangar] = sceneCfg[sceneType.InStage] -- Same as InStage
+sceneCfg[sceneType.Hangar] = { -- Same as InStage
+    camMode = camType.orbit,
+    buttons = buttons[camType.orbit],
+    axes = axes[camType.orbit],
+}
 sceneCfg[sceneType.HangerDecal] = {
     camMode = camType.orbit,
     buttons = {
@@ -147,6 +163,10 @@ camOffests[sceneType.Cinematic] = {
     Vector3f:new(20, 0, 0),
     Vector3f:new(0, 0, 0),
     Vector3f:new(-2000, 0, 0),
+}
+camOffests[sceneType.Hangar] = {
+    Vector3f:new(0, 0, 0),
+    Vector3f:new(2000, 0, 0),
 }
 camOffests[sceneType.HangerDecal] = {
     Vector3f:new(3000, 0, 0),
@@ -369,6 +389,7 @@ end)
 -- Initialize the plugin
 lib.enableGUI(true) -- Prevent the GUI from being hidden by the last game session
 -- Setup custom scene configurations first that will not be affected by scene changes
+setSceneCofig(sceneCfg[sceneType.Default])
 setSceneCofig(sceneCfg[sceneType.FreeCam])
 setSceneCofig(sceneCfg[sceneType.Cinematic])
 
