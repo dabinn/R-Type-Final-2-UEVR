@@ -5,8 +5,8 @@
 --          parameters for the DS UVER Free Camera, enhancing the overall 
 --          enjoyment of the game.
 -- License: MIT
--- Version: 2.0.1
--- Date:    2025/02/13
+-- Version: 2.2.0
+-- Date:    2025/03/16
 -- Author:  Dabinn Huang @DSlabs
 -- Powered by TofuExpress --
 
@@ -35,9 +35,11 @@ local camType = freecam.camType
 -- freecam customization
 uprint("Customizing Free Camera")
 cfg.opt = {
-    enableGuiToggle = true, -- Disable game GUI when free camera is enabled
+    uevrAttachCameraCompatible = false, -- Compatible with UEVR's attached camera feature, affecting the camera offset value in the UEVR interface.
+    autoGameMenuToggle = true, -- Disable game GUI when free camera is enabled
+    freecamInvertPitch = false, -- Invert the pitch of the free camera
     recenterVROnCameraReset = true, -- Reset the camera and recenter VR at the same time
-    freecamKeepPosition = true,  -- Don't reset the free camera's position while switching cameras.
+    orbitcamSyncOrientationToFreecam = true, -- Sync the orientation of the orbit camera to the free camera
 }
 
 
@@ -53,16 +55,28 @@ local sceneType={
 
 local buttons = {}
 buttons[camType.free] = {
-    active = "L3_held",
-    deactive = "L3",
-    resetCam = "R3",
-    speedIncrease = "RB",
-    speedDecrease = "LB",
+    active = "L3_held", -- Activate free camera
+    deactive = "L3", -- Deactivate free camera
+    resetCam = "R3", -- Reset the camera
+    resetAll = "R3_held", -- Reset both the camera and the custom view
+    speedIncrease = "RB", -- Increase movement speed
+    speedDecrease = "LB", -- Decrease movement speed
+    levelFlight = "X", -- Toggle level flight / omni-directional flight mode
+    omniFlightWithSpaceControl = "X_held", -- Enable omni-directional flight mode with space control scheme
+    followOn = "Y", -- Enable follow mode
+    followPositionOnly = "Y_doubleclick", -- Enable follow position only mode
+    followOff = "Y_held", -- Disable follow mode (Hold the camera)
+    viewCycle = "Back", -- Cycle through saved views
+    viewSave = "Back_held", -- Save the current view
+    autoGameMenuToggle = "Start", -- Hide the game menu automatically when free camera is enabled
+    -- disable = "B", -- for debug only
 }
 buttons[camType.orbit] = {
     camDolly = "RB_held",
-    camOffset= "Back",
     resetCam = "R3",
+    resetAll = "R3_held", -- Reset both the camera and the custom view
+    viewCycle = "Back",
+    viewSave  = "Back_held",
 }
 local axes = {}
 axes[camType.orbit] = {
@@ -95,8 +109,10 @@ sceneCfg[sceneType.HangerDecal] = {
     camMode = camType.orbit,
     buttons = {
         moveBackward = "RB",
-        camOffset= "Back",
         resetCam = "R3",
+        resetAll = "R3_held", -- Reset both the camera and the custom view
+        viewCycle = "Back",
+        viewSave  = "Back_held",
     },
     axes = {
         move={"", "RT"},
@@ -106,10 +122,16 @@ sceneCfg[sceneType.HangerDecal] = {
 sceneCfg[sceneType.Cinematic] = {
     camMode = camType.scene,
     buttons = {
-        camOffset= "Back",
+        resetCam = "R3",
+        resetAll = "R3_held", -- Reset both the camera and the custom view
         speedIncrease = "RB",
         speedDecrease = "LB",
-        resetCam = "R3",
+        levelFlight = "X", -- Toggle level flight / omni-directional flight mode
+        followOn = "B", -- Enable follow mode
+        followPositionOnly = "B_doubleclick", -- Enable follow position only mode
+        followOff = "B_held", -- Disable follow mode (Hold the camera)
+        viewCycle = "Back", -- Cycle through saved views
+        viewSave = "Back_held", -- Save the current view
     },
     axes = {
         move={"LX", "LY"},
@@ -131,7 +153,7 @@ cfg.spd[camType.free] = {
 cfg.spd[camType.orbit] = {
     speedTotalStep = 1, -- 1: no speed adjustment, only needs to set the max speed
     move_speed_max = 5000,
-    rotate_speed_max = 90,
+    rotate_speed_max = 180,
     currMoveStep = 1,
     currRotStep = 1
 }
@@ -173,7 +195,7 @@ camOffests[sceneType.HangerDecal] = {
     Vector3f:new(5000, 0, 0),
     Vector3f:new(0, 0, 0),
 }
-local camOffsetsPresetNos = {} -- Remeber the last preset number for each scene
+local sceneCamViewPresetNos = {} -- Remeber the last preset number for each scene
 
 
 local scene = sceneType.Default
@@ -183,18 +205,30 @@ local isInHanger = false
 local viewTarget = nil
 
 -- Cam offsets for each scene
-local function updateCamOffsets()
-    local presetNos = camOffsetsPresetNos
+local function updateSceneCamViews()
+    local presetNos = sceneCamViewPresetNos
     if not presetNos[scene] then
         presetNos[scene] = 1
     end
     local presetNo = presetNos[scene]
+    local currCamOffsets = {}
     if scene == sceneType.InStage or scene == sceneType.Competition then
         -- set New cam offsets, and remember the last preset number for each scene
-        presetNos[lastScene] = freecam.setCamOffsets(camOffests[sceneType.InStage], presetNo)
+        currCamOffsets = camOffests[sceneType.InStage]
     elseif camOffests[scene] then -- Include sceneType.Default
-        presetNos[lastScene] = freecam.setCamOffsets(camOffests[scene], presetNo)
+        currCamOffsets = camOffests[scene]
     end
+    -- TODO: consider the relRot data?
+    local sceneCameViewPresets = {}
+    for i, offset in ipairs(currCamOffsets) do
+        sceneCameViewPresets[i] = {}
+        sceneCameViewPresets[i].relPos = offset
+        sceneCameViewPresets[i].relRot = Vector3f:new(0, 0, 0)
+    end
+
+    presetNos[lastScene] = freecam.setSceneCamViewPresets(sceneCameViewPresets, presetNo)
+
+
 end
 
 -- viewTarget
@@ -283,12 +317,12 @@ local function updateViewTarget(freecamMode)
 end
 
 local function sceneCamToggle(freecamMode)
-    freecam:resetCam()
     -- UE: front=+x, right=+y, up=+z
-    updateCamOffsets()
+    updateSceneCamViews()
     updateViewTarget(freecamMode)
     freecam.camModeToggle(freecamMode)
     lastScene = scene
+    freecam:resetCam()
 end
 local function setSceneCofig(sceneConfig)
     freecam.setCamControl(sceneConfig.camMode, sceneConfig)
@@ -375,9 +409,10 @@ uevr.sdk.callbacks.on_post_engine_tick(function(engine, delta)
                     scene = sceneType.HangerDecal
                     sceneToggle(sceneCfg[scene])
                 end
-            else
+            elseif string.match(view_target:get_full_name(), "CameraActor /Game/Level/Hangar/Hangar_BG.+") then -- In Hanger
                 if scene ~= sceneType.Hangar then
                     uprint("# In Hangar")
+                    -- uprint("View Target: " .. view_target:get_full_name())
                     scene = sceneType.Hangar
                     sceneToggle(sceneCfg[scene])
                 end
