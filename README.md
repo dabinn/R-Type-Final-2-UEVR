@@ -13,7 +13,7 @@ This plugin originally started as a simple tool to automatically switch camera p
 - Avoiding visual glitches caused by the headset during the opening animation.
 
 Later, after developing a universal camera plugin, I redesigned this plugin to leverage its features.
-Now, you can enjoy all the features of the universal camera plugin, such as **free camera**, **time manipulation**, etc. (For detailed instructions, please refer to the [Universal Free Camera Plugin](https://github.com/dabinn/UEVR-Universal-Free-Camera/); I won't repeat them here.)
+Now, you can enjoy all the features of the universal camera plugin, such as **free camera**, **time manipulation**, etc. (For detailed instructions, please refer to the [Universal Free Camera Plugin](https://github.com/dabinn/UEVR-Universal-Free-Camera/); I won't repeat them here.)  
   
 There are also extra custom features specifically for R-Type Final 2, such as:
 - **Orbit Camera**: You can adjust the view at any time with `Right analog stick`, even during gameplay.
