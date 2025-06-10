@@ -18,9 +18,9 @@ Now, you can enjoy all the features of the universal camera plugin, such as **fr
 There are also extra custom features specifically for R-Type Final 2, such as:
 - **Orbit Camera**: You can adjust the view at any time with `Right analog stick`, even during gameplay.
 - **In-game camera switch**: Easily switch between three different camera positions during gameplay! (Use the `Select` button). Several comfortable default positions have been fine-tuend for different scenes.
-**Camera distance adjustment**:You can also hold the `RB button` and push the right stick forward/backward anytime to adjust the camera distance, it is very convenient!
+- **Camera distance adjustment**:You can also hold the `RB button` and push the `right stick` forward/backward anytime to adjust the camera distance, it is very convenient!
 ![](img/controller_orbitcam.svg)
-- **Enhanced scene detection**: The plugin detects and improves controls for different scenes such as gameplay, cutscenes, hangar, sticker mode, etc.
+- **Enhanced scene detection**: The plugin detects and improves controls for different scenes such as gameplay, cutscenes, hangar, decal mode, etc.
 - **Other Fixes**: e.g. Fixed the issue where UEVR couldn't control the camera in decal mode.
 
 # Installation
