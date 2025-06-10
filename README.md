@@ -1,6 +1,6 @@
 [按這打開中文說明](https://github.com/dabinn/R-Type-Final-2-UEVR/blob/main/doc/Chinese/Readme.md)
 # R-Type-Final-2-UEVR
-Because I really like the R-Type series, I made a dedicated UEVR plugin for it.
+As a big fan of the R-Type series, I created this dedicated UEVR plugin to enhance the experience.
 
 # Demo Video
 <a href="https://www.youtube.com/watch?v=A5wXk5k4WVk" target="_blank">

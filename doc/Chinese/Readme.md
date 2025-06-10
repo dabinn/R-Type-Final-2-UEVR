@@ -1,5 +1,5 @@
 # R-Type-Final-2-UEVR
-因為我很喜R-Type系列，所以就幫他做了UEVR的專用插件。
+身為R-Type系列的愛好者，所以我幫他做了UEVR的專用插件。
 
 # 示範影片
 <a href="https://www.youtube.com/watch?v=A5wXk5k4WVk" target="_blank">
