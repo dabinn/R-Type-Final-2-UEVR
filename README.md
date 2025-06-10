@@ -24,7 +24,7 @@ There are also extra custom features specifically for R-Type Final 2, such as:
 - **Other Fixes**: e.g. Fixed the issue where UEVR couldn't control the camera in decal mode.
 
 # Installation
-Import this configuration file in the UEVR interface, then restart the game.
+Import this configuration file in the UEVR interface, then restart the game.  
 Or you can manually extract the zip file and place it in the game's script directory.
 
 
