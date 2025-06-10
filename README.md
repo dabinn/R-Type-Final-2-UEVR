@@ -1,3 +1,4 @@
+[按這打開中文說明](https://github.com/dabinn/R-Type-Final-2-UEVR/blob/main/doc/Chinese/Readme.md)
 # R-Type-Final-2-UEVR
 Because I really like the R-Type series, I made a dedicated UEVR plugin for it.
 
